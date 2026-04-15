@@ -15,9 +15,8 @@
     }
 
     :root {
-      --bg:   #0e0d0b;
-      --fg:   #e8e3d9;
-      --dim:  #5a5650;
+      --bg: #0e0d0b;
+      --fg: #e8e3d9;
     }
 
     html, body {
@@ -34,9 +33,6 @@
       overflow: hidden;
     }
 
-    @media (hover: none) {
-      body { cursor: auto; }
-
     /* grain overlay */
     body::before {
       content: '';
@@ -48,7 +44,17 @@
       z-index: 10;
     }
 
-    /* custom cursor */
+    /* vignette */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,.6) 100%);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* custom cursor — desktop only */
     .cursor {
       position: fixed;
       width: 6px;
@@ -58,11 +64,15 @@
       pointer-events: none;
       z-index: 100;
       transform: translate(-50%, -50%);
-      transition: opacity .3s, transform .15s;
       opacity: 0;
+      transition: opacity .3s;
     }
 
-    /* center link */
+    @media (hover: hover) {
+      body { cursor: none; }
+    }
+
+    /* the link */
     a.entry {
       font-family: 'Special Elite', 'Courier New', monospace;
       font-size: clamp(1.4rem, 5vw, 2.6rem);
@@ -70,10 +80,11 @@
       color: var(--fg);
       text-decoration: none;
       position: relative;
+      z-index: 20;
       opacity: 0;
-      animation: fadeIn 2.2s cubic-bezier(.4,0,.2,1) forwards;
-      animation-delay: .4s;
-      /* subtle underline that grows on hover */
+      animation: fadeIn 2.2s cubic-bezier(.4,0,.2,1) forwards,
+                 breathe 6s ease-in-out 2.6s infinite;
+      -webkit-tap-highlight-color: transparent;
     }
 
     a.entry::after {
@@ -87,16 +98,8 @@
       transition: width .6s cubic-bezier(.4,0,.2,1);
     }
 
-    a.entry:hover::after {
-      width: 100%;
-    }
-
-    /* breath animation while idle — only on non-touch devices */
     @media (hover: hover) {
-      a.entry:not(:hover) {
-        animation: fadeIn 2.2s cubic-bezier(.4,0,.2,1) forwards,
-                   breathe 6s ease-in-out 2.6s infinite;
-      }
+      a.entry:hover::after { width: 100%; }
     }
 
     @keyframes fadeIn {
@@ -106,40 +109,28 @@
 
     @keyframes breathe {
       0%, 100% { opacity: 1; }
-      50%       { opacity: .55; }
-    }
-
-    /* vignette */
-    .vignette {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(ellipse at center,
-        transparent 40%,
-        rgba(0,0,0,.55) 100%);
-      pointer-events: none;
-      z-index: 5;
+      50%       { opacity: .5; }
     }
   </style>
 </head>
 <body>
 
-  <div class="vignette"></div>
   <div class="cursor" id="cursor"></div>
 
   <a class="entry" href="index.html">substância negra</a>
 
   <script>
-    const cursor = document.getElementById('cursor');
-
-    document.addEventListener('mousemove', e => {
-      cursor.style.opacity = '1';
-      cursor.style.left = e.clientX + 'px';
-      cursor.style.top  = e.clientY + 'px';
-    });
-
-    document.addEventListener('mouseleave', () => {
-      cursor.style.opacity = '0';
-    });
+    if (window.matchMedia('(hover: hover)').matches) {
+      var cursor = document.getElementById('cursor');
+      document.addEventListener('mousemove', function(e) {
+        cursor.style.opacity = '1';
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top  = e.clientY + 'px';
+      });
+      document.addEventListener('mouseleave', function() {
+        cursor.style.opacity = '0';
+      });
+    }
   </script>
 </body>
 </html>
