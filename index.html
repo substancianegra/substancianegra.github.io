@@ -32,8 +32,10 @@
       justify-content: center;
       min-height: 100vh;
       overflow: hidden;
-      cursor: none;
     }
+
+    @media (hover: none) {
+      body { cursor: auto; }
 
     /* grain overlay */
     body::before {
@@ -71,8 +73,6 @@
       opacity: 0;
       animation: fadeIn 2.2s cubic-bezier(.4,0,.2,1) forwards;
       animation-delay: .4s;
-      cursor: none;
-
       /* subtle underline that grows on hover */
     }
 
@@ -91,10 +91,12 @@
       width: 100%;
     }
 
-    /* breath animation while idle */
-    a.entry:not(:hover) {
-      animation: fadeIn 2.2s cubic-bezier(.4,0,.2,1) forwards,
-                 breathe 6s ease-in-out 2.6s infinite;
+    /* breath animation while idle — only on non-touch devices */
+    @media (hover: hover) {
+      a.entry:not(:hover) {
+        animation: fadeIn 2.2s cubic-bezier(.4,0,.2,1) forwards,
+                   breathe 6s ease-in-out 2.6s infinite;
+      }
     }
 
     @keyframes fadeIn {
